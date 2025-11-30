@@ -1,34 +1,32 @@
-name: Publish WinForms Application
+name: Build WinForms .NET Framework App
 
 on:
   push:
     branches:
       - main
+
 jobs:
-  build-and-publish:
+  build:
     runs-on: windows-latest
-    
+
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '6.0.x' 
-          
-      - name: Restore dependencies
-        run: dotnet restore
-        working-directory: .
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
 
-      - name: Publish application
-        run: dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true /p:Configuration=Release
-        working-directory: ./Passwords_project 
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: Restore NuGet packages
+        run: nuget restore passwords_project.sln
+
+      - name: Build solution
+        run: msbuild passwords_project.sln /p:Configuration=Release
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: PasswordGenerator-WinForms
-          path: passwords_project/bin/Release/net6.0-windows/win-x64/publish/*
-          retention-days: 7
+          path: passwords_project/bin/Release/
