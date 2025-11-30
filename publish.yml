@@ -4,31 +4,28 @@ on:
   push:
     branches:
       - main
+
 jobs:
   build-and-publish:
     runs-on: windows-latest
     
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '6.0.x' 
-          
+          dotnet-version: '6.0.x'
+
       - name: Restore dependencies
-        run: dotnet restore ./Passwords_project.sln
-        working-directory: . 
+        run: dotnet restore ./passwords_project.sln
 
       - name: Publish application
-        run: dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true /p:Configuration=Release
-        working-directory: ./Passwords_project
+        run: dotnet publish passwords_project.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: PasswordGenerator-WinForms
-          path: Passwords_project/bin/Release/net6.0-windows/win-x64/publish/*
+          path: bin/Release/net6.0-windows/win-x64/publish/*
           retention-days: 7
