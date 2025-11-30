@@ -19,12 +19,12 @@ jobs:
           dotnet-version: '6.0.x' 
           
       - name: Restore dependencies
-        run: dotnet restore ./Passwords_project/passwords_project.sln
+        run: dotnet restore ./Passwords_project.sln
         working-directory: . 
 
       - name: Publish application
         run: dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true /p:Configuration=Release
-        working-directory: ./Passwords_project 
+        working-directory: ./Passwords_project
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
